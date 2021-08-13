@@ -12,7 +12,7 @@ build:
   flags:
     - -trimpath
   ldflags:
-    - -s -w -X github.com/hacdias/webdav/cmd.version={{.Version}}
+    - -s -w -X github.com/dbian/webdav/cmd.version={{.Version}}
   goos:
     - darwin
     - linux
@@ -51,7 +51,7 @@ archives:
 
 release:
   github:
-    owner: hacdias
+    owner: dbian
     name: webdav
   draft: false
   prerelease: auto
@@ -62,7 +62,7 @@ dockers:
     goarch: amd64
     goarm: ''
     image_templates:
-      - "hacdias/webdav:latest"
-      - "hacdias/webdav:{{ .Tag }}"
-      - "hacdias/webdav:v{{ .Major }}.{{ .Minor }}"
-      - "hacdias/webdav:v{{ .Major }}"
+      - "dbian/webdav:latest"
+      - "dbian/webdav:{{ .Tag }}"
+      - "dbian/webdav:v{{ .Major }}.{{ .Minor }}"
+      - "dbian/webdav:v{{ .Major }}"
