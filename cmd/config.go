@@ -20,10 +20,10 @@ func parseRules(raw []interface{}, defaultModify bool) []*lib.Rule {
 	for _, v := range raw {
 		if r, ok := v.(map[interface{}]interface{}); ok {
 			rule := &lib.Rule{
-				Regex: false,
-				Allow: false,
+				Regex:  false,
+				Allow:  false,
 				Modify: defaultModify,
-				Path:  "",
+				Path:   "",
 			}
 
 			if regex, ok := r["regex"].(bool); ok {
@@ -182,7 +182,6 @@ func readConfig(flags *pflag.FlagSet) *lib.Config {
 			Modify: getOptB(flags, "modify"),
 			Rules:  []*lib.Rule{},
 			Handler: &webdav.Handler{
-				Prefix: getOpt(flags, "prefix"),
 				FileSystem: lib.WebDavDir{
 					Dir:     webdav.Dir(getOpt(flags, "scope")),
 					NoSniff: getOptB(flags, "nosniff"),
@@ -198,6 +197,8 @@ func readConfig(flags *pflag.FlagSet) *lib.Config {
 		},
 		Users: map[string]*lib.User{},
 	}
+
+	parseFd(cfg)
 
 	rawRules := v.Get("rules")
 	if rules, ok := rawRules.([]interface{}); ok {
@@ -219,4 +220,20 @@ func readConfig(flags *pflag.FlagSet) *lib.Config {
 	}
 
 	return cfg
+}
+
+func parseFd(c *lib.Config) {
+	var f lib.FolderListCfg
+	err := v.Unmarshal(&f)
+
+	if err != nil {
+		log.Println("folder cfg invalid")
+		return
+	} else {
+		c.Folders = make(map[string]string, len(f.Folders))
+		for _, v := range f.Folders {
+			c.Folders[v.MapTo] = v.Path
+		}
+		log.Println("folder mapping ", c.Folders)
+	}
 }

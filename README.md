@@ -1,13 +1,24 @@
 # webdav
 
-![Build](https://github.com/hacdias/webdav/workflows/Tests/badge.svg)
-[![Go Report Card](https://goreportcard.com/badge/github.com/hacdias/webdav?style=flat-square)](https://goreportcard.com/report/hacdias/webdav)
-[![Version](https://img.shields.io/github/release/hacdias/webdav.svg?style=flat-square)](https://github.com/hacdias/webdav/releases/latest)
-[![Docker Pulls](https://img.shields.io/docker/pulls/hacdias/webdav)](https://hub.docker.com/r/hacdias/webdav)
+![Build](https://github.com/dbian/webdav/workflows/Tests/badge.svg)
+[![Go Report Card](https://goreportcard.com/badge/github.com/dbian/webdav?style=flat-square)](https://goreportcard.com/report/dbian/webdav)
+[![Version](https://img.shields.io/github/release/dbian/webdav.svg?style=flat-square)](https://github.com/dbian/webdav/releases/latest)
+[![Docker Pulls](https://img.shields.io/docker/pulls/dbian/webdav)](https://hub.docker.com/r/dbian/webdav)
+
+
+## Prelude
+
+Inpired by [hacdias](https://github.com/hacdias/webdav), i forked his repo and do some own development.
+
+### Mainly Features
+1. Specify as many folders as you can, and map to their virtual folder names, see the examples below. In Chinese: 可管理多个文件夹，映射到各自的虚拟目录
+
+
+
 
 ## Install
 
-Please refer to the [Releases page](https://github.com/hacdias/webdav/releases) for more information. There, you can either download the binaries or find the Docker commands to install WebDAV.
+Please refer to the [Releases page](https://github.com/dbian/webdav/releases) for more information. There, you can either download the binaries or find the Docker commands to install WebDAV.
 
 ## Usage
 
@@ -18,47 +29,29 @@ Please refer to the [Releases page](https://github.com/hacdias/webdav/releases) 
 address: 0.0.0.0
 port: 0
 auth: true
-tls: false
+tls: true # better to set to true, cause the basic auth is easy to be hacked
 cert: cert.pem
 key: key.pem
-prefix: /
 
 # Default user settings (will be merged)
 scope: .
 modify: true
 rules: []
 
-# CORS configuration
-cors:
-  enabled: true
-  credentials: true
-  allowed_headers:
-    - Depth
-  allowed_hosts:
-    - http://localhost:8080
-  allowed_methods:
-    - GET
-  exposed_headers:
-    - Content-Length
-    - Content-Range
+folders:
+  - path: /public/a/ # windows: C:\persist
+    mapto: /folder_a # uri: https://a.com/folder_a
+  - path: /public/b/
+    mapto: /folder_b # uri: https://a.com/folder_b
 
 users:
-  - username: admin
-    password: admin
-    scope: /a/different/path
   - username: encrypted
     password: "{bcrypt}$2y$10$zEP6oofmXFeHaeMfBNLnP.DO8m.H.Mwhd24/TOX2MWLxAExXi4qgi"
   - username: "{env}ENV_USERNAME"
     password: "{env}ENV_PASSWORD"
   - username: basic
     password: basic
-    modify:   false
-    rules:
-      - regex: false
-        allow: false
-        path: /some/file
-      - path: /public/access/
-        modify: true
+     
 ```
 
 There are more ways to customize how you run WebDAV through flags and environment variables. Please run `webdav --help` for more information on that.
@@ -86,7 +79,3 @@ location / {
         proxy_redirect off;
     }
 ```
-
-## License
-
-MIT © [Henrique Dias](https://hacdias.com)

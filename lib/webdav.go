@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -19,6 +20,17 @@ type CorsCfg struct {
 	ExposedHeaders []string
 }
 
+// FolderCfg
+type FolderCfg struct {
+	Path  string
+	MapTo string
+}
+
+// FolderListCfg
+type FolderListCfg struct {
+	Folders []FolderCfg
+}
+
 // Config is the configuration of a WebDAV instance.
 type Config struct {
 	*User
@@ -26,6 +38,7 @@ type Config struct {
 	NoSniff bool
 	Cors    CorsCfg
 	Users   map[string]*User
+	Folders map[string]string
 }
 
 // ServeHTTP determines if the request is for this plugin, and if all prerequisites are met.
@@ -143,8 +156,13 @@ func (c *Config) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	//		the collection, or something else altogether.
 	//
 	// Get, when applied to collection, will return the same as PROPFIND method.
-	if r.Method == "GET" && strings.HasPrefix(r.URL.Path, u.Handler.Prefix) {
-		info, err := u.Handler.FileSystem.Stat(context.TODO(), strings.TrimPrefix(r.URL.Path, u.Handler.Prefix))
+	if r.Method == "GET" {
+		if err := transPrefix(c.Folders, r); err != nil {
+			log.Println(err)
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+		info, err := u.Handler.FileSystem.Stat(context.TODO(), r.URL.Path)
 		if err == nil && info.IsDir() {
 			r.Method = "PROPFIND"
 
@@ -152,11 +170,43 @@ func (c *Config) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				r.Header.Add("Depth", "1")
 			}
 		}
+	} else {
+		if err := transPrefix(c.Folders, r); err != nil {
+			log.Println(err)
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
 	}
 
 	// Runs the WebDAV.
 	//u.Handler.LockSystem = webdav.NewMemLS()
 	u.Handler.ServeHTTP(w, r)
+}
+
+func transPrefix(c map[string]string, r *http.Request) error {
+	p := r.URL.Path
+	if p == "" {
+		p = "/"
+	}
+	var prefix string
+	var suffix string
+	idx := strings.Index(p[1:], "/")
+	if idx == -1 {
+		prefix = p
+	} else {
+		prefix, suffix = p[:idx+1], p[idx+1:]
+	}
+	log.Println("prefix", prefix, "suffix", suffix)
+
+	if real, ok := c[prefix]; ok {
+		r.URL.Path = strings.ReplaceAll(
+			filepath.Join(real, suffix),
+			"\\",
+			"/")
+		log.Println("path is", r.URL.Path)
+		return nil
+	}
+	return fmt.Errorf("not valid virtual path")
 }
 
 // responseWriterNoBody is a wrapper used to suprress the body of the response

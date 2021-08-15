@@ -2,13 +2,14 @@ package main
 
 import (
 	"context"
-	"github.com/hacdias/webdav/v3/lib"
 	"log"
 	"os"
 	"os/signal"
 	"runtime"
 	"syscall"
 	"time"
+
+	"github.com/hacdias/webdav/v3/lib"
 
 	"github.com/hacdias/webdav/v3/cmd"
 )

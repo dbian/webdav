@@ -1,2 +1,5 @@
 dist/
 webdav
+.vscode/launch.json
+webdav.exe
+sample/
