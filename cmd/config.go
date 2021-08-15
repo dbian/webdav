@@ -20,10 +20,10 @@ func parseRules(raw []interface{}, defaultModify bool) []*lib.Rule {
 	for _, v := range raw {
 		if r, ok := v.(map[interface{}]interface{}); ok {
 			rule := &lib.Rule{
-				Regex: false,
-				Allow: false,
+				Regex:  false,
+				Allow:  false,
 				Modify: defaultModify,
-				Path:  "",
+				Path:   "",
 			}
 
 			if regex, ok := r["regex"].(bool); ok {
@@ -216,6 +216,14 @@ func readConfig(flags *pflag.FlagSet) *lib.Config {
 
 	if len(cfg.Users) != 0 && !cfg.Auth {
 		log.Print("Users will be ignored due to auth=false")
+	}
+
+	root := getOpt(flags, "root")
+	if root != "" {
+		log.Println("set root dir", root)
+		if err := os.Chdir(root); err != nil {
+			panic(err)
+		}
 	}
 
 	return cfg

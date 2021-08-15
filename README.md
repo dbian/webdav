@@ -1,13 +1,23 @@
+
+
+fork from https://github.com/hacdias/webdav
+
+# Mainly feature diff from hacdias
+
+1. User can specify root directory (Optional), see the yaml example below. In Chinese：可指定webdav的根目录，下面有示例。
+
+
+
 # webdav
 
-![Build](https://github.com/hacdias/webdav/workflows/Tests/badge.svg)
-[![Go Report Card](https://goreportcard.com/badge/github.com/hacdias/webdav?style=flat-square)](https://goreportcard.com/report/hacdias/webdav)
-[![Version](https://img.shields.io/github/release/hacdias/webdav.svg?style=flat-square)](https://github.com/hacdias/webdav/releases/latest)
-[![Docker Pulls](https://img.shields.io/docker/pulls/hacdias/webdav)](https://hub.docker.com/r/hacdias/webdav)
+![Build](https://github.com/dbian/webdav/workflows/Tests/badge.svg)
+[![Go Report Card](https://goreportcard.com/badge/github.com/dbian/webdav?style=flat-square)](https://goreportcard.com/report/dbian/webdav)
+[![Version](https://img.shields.io/github/release/dbian/webdav.svg?style=flat-square)](https://github.com/dbian/webdav/releases/latest)
+[![Docker Pulls](https://img.shields.io/docker/pulls/dbian/webdav)](https://hub.docker.com/r/dbian/webdav)
 
 ## Install
 
-Please refer to the [Releases page](https://github.com/hacdias/webdav/releases) for more information. There, you can either download the binaries or find the Docker commands to install WebDAV.
+Please refer to the [Releases page](https://github.com/dbian/webdav/releases) for more information. There, you can either download the binaries or find the Docker commands to install WebDAV.
 
 ## Usage
 
@@ -41,6 +51,8 @@ cors:
   exposed_headers:
     - Content-Length
     - Content-Range
+
+root: /opt/data # windows os eg.: C:\persist
 
 users:
   - username: admin
@@ -86,7 +98,3 @@ location / {
         proxy_redirect off;
     }
 ```
-
-## License
-
-MIT © [Henrique Dias](https://hacdias.com)
